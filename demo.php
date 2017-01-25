@@ -1,17 +1,18 @@
-﻿<?php
+<?php
 
-  $url = 'https://api.openbd.jp/v1/coverage';
-  $json = file_get_contents($url);
-  $bd = json_decode($json, true );
+  $url = 'https://api.openbd.jp/v1/coverage'; // openbdの /covrerage のURLを指定
+  $json = file_get_contents($url); // openbdの /covrerage から全件のISBNを一覧したjsonを取得
+  $bd = json_decode($json, true ); // json_decode のオプションを true とすることで配列として扱う
 
-  $data = preg_grep('/978487615.+?/', $bd);
+  $data = preg_grep('/978487615.+?/', $bd); // 正規表現でISBNの出版社記号（ registrant、この場合は87615（語研））を含む値を配列として抽出
 
-  $isbns = implode(',', $data);
+  $isbns = implode(',', $data); // 抽出した配列をカンマ区切りの文字列に implode する
 
-  $url_detail = 'https://api.openbd.jp/v1/get?isbn=' .$isbns;
+  $url_detail = 'https://api.openbd.jp/v1/get?isbn=' .$isbns; // openbdの /get?isbn=ISBN,ISBN... で、個々の書誌情報を一括で取得するjsonのURLを指定
   $json_detail = file_get_contents($url_detail);
+  $detail = json_decode($json_detail, false ); // json_decode のオプションを false とすることでオブジェクトとして扱う
 
-  $detail = json_decode($json_detail, false );
+/** 以下、foreach を使ってオブジェクト（個々の書誌データ）の summary からISBN・出版日・タイトルを取得してリストとしてHTMLに書き出す */
 
   $html = "<ul>";
 
@@ -31,8 +32,6 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=9" />
-<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1" />
 <title>openDB</title>
 <style>
 </style>
